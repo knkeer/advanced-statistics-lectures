@@ -1,0 +1,299 @@
+%!TEX root = ../main.tex
+
+\section{Лекция 9}
+\subsection{Линейная регрессия}
+Сегодня мы разберём классическую задачу линейной регрессии. Обычно она формулируется следующим образом: допустим, что мы хотим узнать какую-то величину $\vec{\ell} \in \mathbb{R}^{n}$ и проводим измерения. Но реальные инструменты не могут получить абсолютную точность, поэтому замеры будут шумными:
+\[
+	\vec{X} = \vec{\ell} + \vec{\epsilon},
+\]
+где $\vec{X}$ "--- результаты измерений, а $\vec{\epsilon}$ "--- ошибка измерения. Обычно предполагается, что $\vec{\epsilon}$ есть гауссовский вектор, но сегодня мы будем рассматривать общий случай. Далее, на $\vec{\epsilon}$ накладываются следующие ограничения:
+\[
+	\EE[\vec{\epsilon}] = \vec{0}, \quad \DD[\vec{\epsilon}] = \sigma^{2}\matr{I}_{n}.
+\]
+То есть аппарат для наблюдения достаточно хорош, чтобы в среднем скос был нулевой, а ошибки между собой некоррелируют и имеют одинаковую неизвестную дисперсию $\sigma^{2}$.
+В таком виде можно представить почти все реальные задачи.
+
+В чём состоит линейность модели? В том, что мы кое-что знаем про $\vec{\ell}$: это не какой-то произвольный вектор, а вектор из нетривиального \emph{известного} линейного подпростанства $L$ размерности $k < n$. Но что означает, что мы знаем $L$? То, что нам известен его некоторый базис $\vec{z}_{1}, \ldots, \vec{z}_{k} \in \mathbb{R}^{n}$. Составим из базисных векторов матрицу $\matr{Z} = (\vec{z}_{1}, \ldots, \vec{z}_{k}) \in \mathbb{R}^{n \times k}$. Понятно, что в таком случае $\matrixrank{\matr{Z}} = k$. Тогда $\vec{\ell}$ можно разложить в линейную комбинацию:
+\[
+	\vec{\ell} = \sum_{i = 1}^{k} \theta_{i}\vec{z}_{i} = \matr{Z}\vec{\theta}, \text{ где } \vec{\theta} = (\theta_{1}, \ldots, \theta_{k}).
+\]
+Смысл вектора $\vec{\theta}$ очевиден: это неизвестные координаты вектора $\vec{\ell}$ в базисе $\vec{z}_{1}, \ldots, \vec{z}_{k}$. Тогда задача линейной регрессии переформулируется следующим образом: по наблюдению $\vec{X}$ нужно оценить $\vec{\theta}$ и $\sigma^{2}$.
+
+Рассмотрим какие-нибудь примеры:
+\begin{itemize}
+	\item Пусть $\vec{X} = (X_{1}, \ldots, X_{n})$  "--- выборка из нормального распределения $\mathcal{N}(\mu, \sigma^{2})$. В таком случае задачей линейной регрессии можно считать задачу оценки параметров. Для этого скажем, что
+	\[
+		\vec{X} = \begin{pmatrix}
+			\mu \\ \vdots \\ \mu
+		\end{pmatrix}
+		+
+		\begin{pmatrix}
+			X_{1} - \mu \\ \vdots \\ X_{n} - \mu
+		\end{pmatrix}.
+	\]
+	Далее заметим, что первый вектор лежит в одномерном линейном подпростанстве с базисным вектором $(1, \ldots, 1)$, а второй вектор содержит независимые и одинаково распределённые случайные величины с нормальным распределением $\mathcal{N}(0, \sigma^{2})$. Тем самым получаем задачу линейной регрессии.
+
+	\item Теперь рассмотрим пример посложнее. Пусть тело движется по прямой с постоянной скоростю. Далее, в некоторые моменты времени $t_{1}, \ldots, t_{n}$ мы измеряем координату тела:
+	\[
+		X_{i} = a + bt_{i} + \epsilon_{i},
+	\]
+	где $a$ "--- стартовая позиция, $b$ "--- скорость движения тела и $\epsilon_{i}$ "--- погрешность измерения на $i$-й итерации. Задача состоит в оценке неизвестных $a$ и $b$. Как привести эту задачу к задаче линейной регрессии? Для этого поймём, как будет выглядеть вектор $\vec{\ell}$:
+	\[
+		\vec{\ell} = \begin{pmatrix}
+			a + bt_{1} \\ \vdots \\ a + bt_{n}
+		\end{pmatrix}
+		= \begin{pmatrix}
+			1 & t_{1} \\ \vdots & \vdots \\ 1 & t_{n}
+		\end{pmatrix}
+		\begin{pmatrix}
+			a \\ b
+		\end{pmatrix}
+	\]
+	Тем самым разумно положить $\vec{\theta} = (a, b)$: всё неизвестное в задаче, кроме $\sigma^{2}$, заносится в $\vec{\theta}$. Далее, матрицу $\matr{Z}$ можно ввести так:
+	\[
+		\matr{Z} = \begin{pmatrix}
+			1 & t_{1} \\ \vdots & \vdots \\ 1 & t_{n}
+		\end{pmatrix}.
+	\]
+	Если не все наблюдения были проведены в одно и то же время, то это настоящий двумерный базис и получается легальная задача линейной регрессии. Далее, можно провести аналогичные рассуждения, если рассматривать ракету, которая летит по параболе. В таком случае будет добавляться член квадратичной зависимости от времени $ct_{i}^{2}$, но суть от этого не изменится.
+\end{itemize}
+
+Как было сказано ранее, задача состоит в оценивании пары $(\vec{\theta}, \sigma^{2})$. Будем использовать \emph{метод наименьших квдаратов}. Вообще, по этому методу можно оценивать почти всё, что угодно, но в задаче линейной регрессии он даёт содержательные свойства. Сформулируем сам сетод:
+\begin{definition}
+	Оценкой $\vec{\theta}$ по методу наименьших квадратов называется 
+	\[
+		\hat{\vec{\theta}}(\vec{X}) = \arg\min_{\vec{\theta} \in \mathbb{R}^{k}} \|\vec{X} - \matr{Z}\vec{\theta}\|^{2}.
+	\]
+\end{definition}
+Геометрический смысл этого определения крайне прост: $\matr{Z}\hat{\vec{\theta}}(\vec{X})$ есть проекция $\vec{X}$ на $L$. Но тогда $\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})$ есть проекция $\vec{X}$ на ортогональное подпространство $L^{\perp}$. Отсюда можно получить замкнутую форму для $\hat{\vec{\theta}}(\vec{X})$.
+\begin{lemma}
+	Оценка наименьших квадратов имеет следующий вид:
+	\[
+		\hat{\vec{\theta}}(\vec{X}) = (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\vec{X}.
+	\]
+\end{lemma}
+Перед этим заметим, что $\matr{Z}^{\top}\matr{Z} \in \mathbb{R}^{k \times k}$ является обратимой матрицей, так как столбцы $\matr{Z}$ являются базисными.
+\begin{proof}
+	Как было сказано выше, $\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})$ есть проекция $\vec{X}$ на $L^{\perp}$. Следовательно, для любого $\vec{\theta} \in \mathbb{R}^{k}$ $\matr{Z}\vec{\theta}$ ортогонально $\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})$:
+	\[
+		\langle \vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X}), \matr{Z}\vec{\theta} \rangle = \vec{\theta}^{\top}\matr{Z}^{\top}(\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})) = 0.
+	\]
+	Но второе равенсто выполнено для всех $\vec{\theta} \in \mathbb{R}^{k}$ тогда и только тогда, когда $\matr{Z}^{\top}(\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})) = \vec{0}$, так как иначе можно взять $\vec{\theta} = \matr{Z}^{\top}(\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})) \neq \vec{0}$ и получить $0 = \vec{\theta}^{\top}\vec{\theta} > 0$. Следовательно,
+	\[
+		\matr{Z}^{\top}\vec{X} = \matr{Z}^{\top}\matr{Z}\hat{\vec{\theta}}(\vec{X}) \implies \hat{\vec{\theta}}(\vec{X}) = (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\vec{X}. \qedhere
+	\]
+\end{proof}
+Вернёмся к примерам и попробуем посчитать оценки:
+\begin{itemize}
+	\item В первом случае матрица $\matr{Z}$ равна $(1, 1, \ldots, 1)^{\top} \in \mathbb{R}^{n \times 1}$. Тогда $\matr{Z}^{\top}\matr{Z} = n$ и
+	\[
+		\hat{\mu}(\vec{X}) = \frac{1}{n}\matr{Z}^{\top}\vec{X} = \sum_{i = 1}^{n} X_{i} = \overline{\vec{X}}.
+	\]
+	\item Для начала посчитаем $\matr{Z}^{\top}\matr{Z}$:
+	\[
+		\matr{Z}^{\top}\matr{Z}
+		= \begin{pmatrix}
+			n & \sum_{i = 1}^{n} t_{i} \\
+			\sum_{i = 1}^{n} t_{i} & \sum_{i = 1}^{n} t_{i}^{2}
+		\end{pmatrix}.
+	\]
+	Теперь обратим её:
+	\[
+		(\matr{Z}^{\top}\matr{Z})^{-1}
+		= \frac{1}{n\sum_{i = 1}^{n} t_{i}^{2} - (\sum_{i = 1}^{n} t_{i})^{2}}
+		\begin{pmatrix}
+			\sum_{i = 1}^{n} t_{i}^{2} & -\sum_{i = 1}^{n} t_{i} \\
+			-\sum_{i = 1}^{n} t_{i} & n
+		\end{pmatrix}.
+	\]
+	Далее, посчитаем $\matr{Z}^{\top}\vec{X}$:
+	\[
+		\matr{Z}^{\top}\vec{X}
+		= \begin{pmatrix}
+			\sum_{i = 1}^{n} X_{i} \\
+			\sum_{i = 1}^{n} X_{i} t_{i}
+		\end{pmatrix}
+	\]
+	Осталось помножить:
+	\begin{align*}
+		(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\vec{X}
+		&= \frac{1}{n\sum_{i = 1}^{n} t_{i}^{2} - (\sum_{i = 1}^{n} t_{i})^{2}}
+		\begin{pmatrix}
+			(\sum_{i = 1}^{n} X_{i})(\sum_{i = 1}^{n} t_{i}^{2}) - (\sum_{i = 1}^{n} t_{i})(\sum_{i = 1}^{n} X_{i} t_{i}) \\
+			n\sum_{i = 1}^{n} X_{i} t_{i} - (\sum_{i = 1}^{n} X_{i})(\sum_{i = 1}^{n} t_{i}).
+		\end{pmatrix}
+	\end{align*}
+\end{itemize}
+Эта формула хороша всем, кроме одного: вычислять ответ с её помощью может оказаться непозволительно дорого, так как вычисление подразумевает перемножение и обращение матриц: матрицу $2 \times 2$ обернуть достаточно быстро, а матрицу $10000 \times 10000$ уже долго. Поэтому чаще оценку наименьших квадратов ищут по определению, то есть решают задачу минимизации квадратичной функции.
+
+Попытаемся понять, какие свойства могут быть у оценок методом наименьших квадратов. Начнём с самого простого: посчитаем матожидание и дисперсию.
+\begin{lemma}
+	Для оценки методом наименьших квадратов $\hat{\vec{\theta}}(\vec{X})$ выполнено следующее:
+	\[
+		\EE[\hat{\vec{\theta}}(\vec{X})] = \vec{\theta}, 
+		\quad
+		\DD[\hat{\vec{\theta}}(\vec{X})] = \sigma^{2}(\matr{Z}^{\top}\matr{Z})^{-1}.
+	\]
+\end{lemma}
+\begin{proof}
+	Для начала заметим, что матрица $\matr{Z}^{\top}\matr{Z}$ симметрична. Далее, $\vec{X} = \matr{Z}\vec{\theta} + \vec{\epsilon}$, поэтому $\EE[\vec{X}] = \matr{Z}\vec{\theta}$ и $\DD[\vec{X}] = \sigma^{2}\matr{I}_{n}$. Тогда
+	\begin{align*}
+		\EE[\hat{\vec{\theta}}(\vec{X})]
+		&= \EE[(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\vec{X}]
+		= (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\EE[\vec{X}]
+		= (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\matr{Z}\vec{\theta}
+		= \vec{\theta}, \\
+		\DD[\hat{\vec{\theta}}(\vec{X})] 
+		&= \DD[(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\vec{X}]
+		= (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\DD[\vec{X}]\matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}
+		= \sigma^{2}(\matr{Z}^{\top}\matr{Z})^{-1}. \qedhere
+	\end{align*}
+\end{proof}
+Можно ли что-нибудь ещё сказать про эту оценку? Асимптотические свойства рассматривать бесполезно, так как не понятно, что будет происходить с оценкой при увеличении размерности $\vec{\ell}$. Однако ту же оптимальность можно проверить. И оказывается, что она оптимальна, но в немного более узком классе, чем обычно.
+\begin{lemma}
+	Оценка методом наименьших квадратов $\hat{\vec{\theta}}(\vec{X})$ является оптимальной оценкой $\vec{\theta}$ в классе линейных несмещённых оценок, то есть оценок вида $\matr{B}\vec{X}$, где $\matr{B}$ "--- неслучайная матрица.
+\end{lemma}
+\begin{proof}
+	Пусть $\vec{\theta}^{*}(\vec{X}) = \matr{B}\vec{X}$ "--- другая несмещённая оценка $\vec{\theta}$. Тогда для любого $\vec{\theta} \in \mathbb{R}^{k}$
+	\[
+		\vec{\theta} 
+		= \EE_{\vec{\theta}}[\vec{\theta}^{*}(\vec{X})]
+		= \matr{B}\EE_{\vec{\theta}}[\vec{X}]
+		= \matr{B}\matr{Z}\vec{\theta}.
+	\]
+	Далее, $\matr{B} \in \mathbb{R}^{k \times n}$, $\matr{Z} \in \mathbb{R}^{n \times k}$ и $\matr{B}\matr{Z} \in \mathbb{R}^{k \times k}$. Но тогда $\matr{B}\matr{Z} = \matr{I}_{k}$. Далее, заметим, что
+	\[
+		\DD_{\vec{\theta}}[\matr{B}\vec{X}] = \matr{B}\DD_{\vec{\theta}}[\vec{X}]\matr{B}^{\top} = \sigma^{2}\matr{B}\matr{B}^{\top}.
+	\]
+	В итоге нужно доказать, что $\sigma^{2}\matr{B}\matr{B}^{\top} \succcurlyeq \sigma^{2}(\matr{Z}^{\top}\matr{Z})^{-1}$. Для этого рассмотрим следующую дисперсию:
+	\begin{align*}
+		\DD_{\vec{\theta}}[(\matr{B} - (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top})\vec{X}]
+		&= (\matr{B} - (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top})\sigma^{2}\matr{I}_{n}(\matr{B}^{\top} - \matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}) \\
+		&= \sigma^{2}(\matr{B}\matr{B}^{\top} - \matr{B}\matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1} - (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\matr{B}^{\top} + (\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}) \\
+		&= \sigma^{2}\matr{B}\matr{B}^{\top} - \sigma^{2}(\matr{Z}^{\top}\matr{Z})^{-1} \succcurlyeq \matr{0}. \qedhere
+	\end{align*}
+\end{proof}
+Отлично, мы получили наилучшую линейную оценку для $\vec{\theta}$. Но ещё есть неизвестный параметр $\sigma^{2}$, который оценить с помощью метода наименьших квадратов не получится. И что делать? Оказывается, это можно сделать следующим образом.
+\begin{lemma}
+ 	Пусть $\hat{\vec{\theta}}(\vec{X})$ "--- это оценка методом наименьших квадратов. Тогда
+	\[
+		\EE_{\vec{\theta}}[\|\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})\|^{2}] = (n - k)\sigma^{2}.
+	\]
+\end{lemma}
+\begin{proof}
+	Для начала заметим, что $\EE_{\theta}[\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})] = \vec{0}$. Тогда
+	\begin{align*}
+		\EE_{\vec{\theta}}[\|\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})\|^{2}]
+		&= \sum_{i = 1}^{n} \DD_{\theta}[X_{i} - (\matr{Z}\vec{\theta})_{i}]
+		= \matrixtrace{\DD_{\vec{\theta}}[\vec{X} - \matr{Z}\vec{\theta}]}
+		= \matrixtrace{\DD_{\vec{\theta}}[(\matr{I}_{n} - \matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top})\vec{X}]} \\
+		&= \sigma^{2}\matrixtrace{(\matr{I}_{n} - \matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top})(\matr{I}_{n} - \matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top})} \\
+		&= \sigma^{2}\matrixtrace(\matr{I}_{n} - 2\matr{Z}^{\top}(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z} + \matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\matr{Z}(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}) \\
+		&= \sigma^{2}\matrixtrace(\matr{I}_{n} - \matr{Z}^{\top}(\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z})
+		= \sigma^{2}(n - \matrixtrace((\matr{Z}^{\top}\matr{Z})^{-1}\matr{Z}^{\top}\matr{Z}))
+		= \sigma^{2}(n - k). \qedhere
+	\end{align*}
+\end{proof}	
+Тем самым получаем, что несмещённой оценкой $\sigma^{2}$ является
+\[
+	\hat{\sigma}^{2}(\vec{X})
+	= \frac{1}{n - k}\|\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})\|^{2}.
+\]
+Напоследок рассмотрим простую задачу на линейную регрессию.
+\begin{problem}
+	Допустим, что есть два груза с массами $a$ и $b$. Их взвесили по отдельности и вместе. Результаты записали в вектор $(X_{1}, X_{2}, X_{3})$. Найти оценку для $(a, b)$ методом наименьших квадратов.
+\end{problem}
+\begin{proof}[Решение]
+	Для начала сведём это к задаче линейной регрессии:
+	\[
+		\underbrace{\begin{pmatrix}
+			X_{1} \\ X_{2} \\ X_{3}
+		\end{pmatrix}}_{\vec{X}}
+		= \begin{pmatrix}
+			a + \epsilon_{1} \\
+			b + \epsilon_{2} \\
+			a + b + \epsilon_{3}
+		\end{pmatrix}
+		= \underbrace{\begin{pmatrix}
+			1 & 0 \\
+			0 & 1 \\
+			1 & 1
+		\end{pmatrix}}_{\matr{Z}}
+		\underbrace{\begin{pmatrix}
+			a \\ b
+		\end{pmatrix}}_{\vec{\theta}}
+		+
+		\underbrace{\begin{pmatrix}
+			\epsilon_{1} \\ \epsilon_{2} \\ \epsilon_{3}
+		\end{pmatrix}}_{\vec{\epsilon}}.
+	\]
+	Теперь можно считать по уже известной формуле. Для начала посчитаем $(\matr{Z}^{\top}\matr{Z})^{-1}$:
+	\[
+		\matr{Z}^{\top}\matr{Z}
+		= \begin{pmatrix}
+			2 & 1 \\
+			1 & 2
+		\end{pmatrix}
+		\implies 
+		(\matr{Z}^{\top}\matr{Z})^{-1}
+		= \frac{1}{3}\begin{pmatrix}
+			2 & -1 \\
+			-1 & 2
+		\end{pmatrix}.
+	\]
+	Далее,
+	\[
+		\matr{Z}^{\top}\vec{X} = \begin{pmatrix}
+			X_{1} + X_{3} \\ X_{2} + X_{3}
+		\end{pmatrix}
+	\]
+	Следовательно,
+	\[
+		\hat{\vec{\theta}}(\vec{X})
+		= \frac{1}{3}\begin{pmatrix}
+			2X_{1} - X_{2} + X_{3} \\
+			-X_{1} + 2X_{2} + X_{3}
+		\end{pmatrix}
+		\implies
+		\begin{cases}
+			\hat{a}(\vec{X}) = (2X_{1} - X_{2} + X_{3})/3 \\
+			\hat{b}(\vec{X}) = (-X_{1} + 2X_{2} + X_{3})/3 
+		\end{cases}
+	\]
+\end{proof}
+
+\subsection{Гауссовская линейная регрессия}
+Далее в общем случае какие-либо предположения делать уже крайне сложно, поэтому начнём добавлять какие-то ограничения на $\vec{\epsilon}$. Самое популярное "--- затребовать нормальность распределения $\vec{\epsilon}$. В таком случае линейную регрессию называют гауссовской. В ней
+\[
+	\vec{\epsilon} \sim \mathcal{N}(\vec{0}, \sigma^{2}\matr{I}_{n})
+	\implies
+	\vec{X} 
+	\sim \mathcal{N}(\vec{\ell}, \sigma^{2}\matr{I}_{n})
+	= \mathcal{N}(\matr{Z}\vec{\theta}, \sigma^{2}\matr{I}_{n}).
+\]
+Оказывается, что в таком случае полученная раннее оценка методом наименьших квадратов обладает крайне приятными свойствами.
+\begin{theorem}
+	В гауссовской линейной регрессионой модели пара $(\hat{\vec{\theta}}(\vec{X}), \|\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})\|^{2})$ является полной достаточной статистикой для $(\vec{\theta}, \sigma^{2})$.
+\end{theorem}
+\begin{proof}
+	Найдём плотность $\vec{X}$:
+	\begin{align*}
+		p_{\vec{X}}(\vec{x})
+		&= \frac{1}{(2\pi)^{n/2}\sqrt{|\sigma^{2}\matr{I}_{n}|}}\exp\left\{-\frac{1}{2}(\vec{X} - \matr{Z}\vec{\theta})^{\top}(\sigma^{2}\matr{I}_{n})^{-1}(\vec{X} - \matr{Z}\vec{\theta})\right\} \\
+		&= \frac{1}{(2\pi\sigma^{2})^{n/2}}\exp\left\{-\frac{1}{2\sigma^{2}}\|\vec{X} - \matr{Z}\vec{\theta}\|^{2}\right\} \\
+		&= \frac{1}{(2\pi\sigma^{2})^{n/2}}\exp\left\{-\frac{1}{2\sigma^{2}}\|\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X}) + \matr{Z}\hat{\vec{\theta}}(\vec{X}) - \matr{Z}\vec{\theta}\|^{2}\right\}.
+	\end{align*}
+	Далее нужно приглядеться к этой норме. Вспомним, что $\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})$ есть проекция $\vec{X}$ на $L^{\perp}$, а $\matr{Z}\hat{\vec{\theta}}(\vec{X}) - \matr{Z}\vec{\theta}$ лежит в $L$. Но тогда по теореме Пифагора
+	\begin{align*}
+		p_{\vec{X}}(\vec{x})
+		&= \frac{1}{(2\pi\sigma^{2})^{n/2}}\exp\left\{-\frac{\|\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})\|^{2}}{2\sigma^{2}} - \frac{\|\matr{Z}\hat{\vec{\theta}}(\vec{X}) - \matr{Z}\vec{\theta}\|^{2}}{\sigma^{2}}\right\}.
+	\end{align*}
+	Отсюда уже видно то, что по критерию факторизации $(\hat{\vec{\theta}}(\vec{X}), \|\vec{X} - \matr{Z}\hat{\vec{\theta}}(\vec{X})\|^{2})$ есть достаточная статистика. Но нам нужна полнота, поэтому нужно несколько преобразовать плотность и привести её к виду экспоненциального семейства. Для этого немного откатимся назад и раскроем:
+	\begin{align*}
+		p_{\vec{X}}(\vec{x})
+		&= \frac{1}{(2\pi\sigma^{2})^{n/2}}\exp\left\{-\frac{1}{2\sigma^{2}}\|\vec{X} - \matr{Z}\vec{\theta}\|^{2}\right\}
+		= \frac{1}{(2\pi\sigma^{2})^{n/2}}\exp\left\{-\frac{\|\vec{X}\|^{2}}{2\sigma^{2}} + \frac{\langle \matr{Z}^{\top}\vec{X}, \vec{\theta} \rangle}{\sigma^{2}} - \frac{\|\matr{Z}\vec{\theta}\|^{2}}{2\sigma^{2}}\right\} \\
+		&= \frac{1}{(2\pi)^{n/2}}\exp\left\{-\frac{1}{2\sigma^{2}}\|\vec{X}\|^{2} + \sum_{i = 1}^{k} (\matr{Z}^{\top}\vec{X})_{i}\frac{\theta_{i}}{\sigma^{2}} - \frac{\|\matr{Z}\vec{\theta}\|^{2}}{2\sigma^{2}} - \frac{n}{2}\ln \sigma^{2}\right\}.
+	\end{align*}
+	Заметим, что при пробегании $\vec{\theta} \in \mathbb{R}^{k}$ и $\sigma^{2} > 0$ вектор $(-1/(2\sigma^{2}), \theta_{1}/\sigma^{2}, \ldots, \theta_{k}/\sigma^{2})$ заметает полупространство $\mathbb{R}^{k + 1}$. Тем самым по теореме об экспоненциальном семействе статистика $(\matr{Z}^{\top}\vec{X}, \|\vec{X}\|^{2})$ является полной и достаточной статистикой для пары $(\vec{\theta}, \sigma^{2})$. Осталось доказать, что между этой статистикой и статистикой из условия теоремы есть биекция. Это мы докажем на следующей лекции.
+\end{proof}

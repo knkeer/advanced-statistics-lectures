@@ -1,0 +1,170 @@
+%!TEX root = ../main.tex
+
+\section{Лекция 11}
+Вернёмся к нашим гипотезам. Пусть проверяется гипотеза $\mathrm{H}_{0} \colon \Pr \in \mathcal{P}_{0}$ против гипотезы $\mathrm{H}_{1} \colon \Pr \in \mathcal{P}_{1}$, и есть какой-то критерий $S \subset \mathcal{X}$. Ранее мы вводили понятие уровня значимости. Формализуем его:
+\begin{definition}
+	Критерий $S$ имеет уровень значимости $\gamma$, если для любого $\QQ \in \mathcal{P}_{0}$ $\beta(\QQ, S) \leq \gamma$.
+\end{definition}
+По сути, если $\gamma$ является подходящим уровнем значимости, то и любое число, большее $\gamma$, тоже подходит. Поэтому наряду с уровнем значимости вводится минимальный уровень значимости:
+\begin{definition}
+	Минимальным уровнем значимости или же размером критерия называют $\alpha(S) = \sup_{\QQ \in \mathcal{P}_{0}} \beta(\QQ, S)$.
+\end{definition}
+Теперь можно ввести свойства критериев. Они называются так же, как и у оценок: несмещённость и состоятельность, но смысл у них несколько отличается. Введём их.
+\begin{definition}
+	Критерий $S$ для проверки гипотезы $\mathrm{H}_{0} \colon \Pr \in \mathcal{P}_{0}$ против гипотезы $\mathrm{H}_{1} \colon \Pr \in \mathcal{P}_{1}$ называется \emph{несмещённым},\footnote{Не самое удачное название свойства, на самом деле "--- не понятно, что подразумевать под смещённостью.} если
+	\begin{equation}
+		\sup_{\QQ \in \mathcal{P}_{0}} \beta(\QQ, S) \leq \inf_{\QQ \in \mathcal{P}_{1}} \beta(\QQ, S).
+	\end{equation}
+\end{definition}
+Данное свойство достаточно естественно: мы хотим, чтобы на $\mathcal{P}_{0}$ функция мощности была маленькой, а на $\mathcal{P}_{1}$ "--- большой. Поэтому разумно попросить, чтобы значения были разделены.
+\begin{definition}
+	Пусть $\{S_{n}\}_{n = 1}^{\infty}$ "--- последовательность\footnote{Стоит заметить, что $S_{n}$ могут меняться и они живут в разных пространствах: $S_{n} = S_{n}(X_{1}, \ldots, X_{n}) \subset \mathbb{R}^{n}$.} критериев для проверки гипотезы $\mathrm{H}_{0} \colon \Pr \in \mathcal{P}_{0}$ против гипотезы $\mathrm{H}_{1} \colon \Pr \in \mathcal{P}_{1}$. Она называется \emph{состоятельной} (или же говорят, что $S_{n}$ "--- состоятельный критерий), если для любого $\QQ \in \mathcal{P}_{1}$ $\beta(\QQ, S_{n}) \to 1$ при $n \to \infty$.
+\end{definition}
+По сути, это означает, что вероятности ошибки второго рода стремятся к нулю, что есть хорошо. Стоит сказать, что если асимптотический критерий не состоятелен, то он обычно бессмысленен. Но за состоятельность нужно платить, о чём расскажем позднее.
+
+\subsection{Сравнение критериев}
+Пусть есть два критерия $S_{1}$ и $S_{2}$. Как их можно сравнивать? Сразу же стоит сказать, что их имеет смысл сравнивать только в том случае, когда их уровни значимости\footnote{Стоит сказать, что размеры критерия брать не стоит, так как чем меньше уровень значимости, тем выше вероятность ошибки второго рода, и нужно найти некоторый баланс. И, что самое интересное, его можно найти.} равны. Если это не так, то лучше взять критерий с меньшим уровнем значимости "--- ибо меньшая вероятность ошибки первого рода важнее, чем меньшая вероятность ошибки второго рода. Если же они равны, то сравниваем их по функции мощности.
+\begin{definition}
+	Пусть $S_{1}$ и $S_{2}$ "--- критерии уровня значимости $\epsilon$ для проверки гипотезы $\mathrm{H}_{0} \colon \Pr \in \mathcal{P}_{0}$ против гипотезы $\mathrm{H}_{1} \colon \Pr \in \mathcal{P}_{1}$. Будем говорить, что $S_{1}$ (равномерное) мощнее, чем $S_{2}$, если для любого $\QQ \in \mathcal{P}_{1}$ $\beta(\QQ, S_{1}) \geq \beta(\QQ, S_{2})$, то есть вероятность ошибка второго рода для критерия $S_{1}$ равномерно меньше, чем для $S_{2}$.
+\end{definition}
+Если же критерий оказывается мощнее остальных, то мы его будем называть наиболее мощным.
+\begin{definition}
+	Критерий $S$ для проверки гипотезы $\mathrm{H}_{0} \colon \Pr \in \mathcal{P}_{0}$ против гипотезы $\mathrm{H}_{1} \colon \Pr \in \mathcal{P}_{1}$ называется \emph{равномерно наиболее мощным} критерием уровня значимости $\epsilon$, если для любого другого критерия $R$ уровня значимости $\epsilon$ $S$ мощнее, чем $R$.
+\end{definition}
+
+Теперь попытаемся понять, как искать равномерно наиболее мощные критерии уровня значимости $\epsilon$. Самый простой вариант состоит в том, что рассматриваются только \emph{простые} гипотезы, то есть гипотезы, в которых предлагаемые семейства содержат только одно распределение.
+
+Рассмотрим проверку гипотезы $\mathrm{H}_{0} \colon \Pr = \Pr_{0}$ против гипотезы $\mathrm{H}_{1} \colon \Pr = \Pr_{1}$. Далее, предположим, что $\Pr_{0}$ и $\Pr_{1}$ имеют плотности $p_{0}(x)$ и $p_{1}(x)$ по одной и той же мере $\mu$. По сути, оба распределения приходят из доминируемого семейства: например, различить пуассоновское и экспоненциальное распределение крайне просто "--- считаем, что экспоненциальное, если получили нецелое число, и пуассовское иначе. Такой критерий никогда не ошибается.
+
+Пусть $\lambda > 0$. Введём следующее множество $S_{\lambda} = \{x \colon p_{1}(x) - \lambda p_{0}(x) \geq 0\}$ и скажем, что это критерий. Логика за этим критерием понятна: мы отвергаем $\mathrm{H}_{0}$, если $p_{1}(x) > \lambda p_{0}(x)$. Это неравенство можно понимать в том смысле, что $p_{1}$ более правдоподобна. Теперь докажем одно интересное свойство, связанное с этим критерием.
+
+\begin{lemma}[Нейман, Пирсон]
+	Пусть критерий $R$ таков, что $\Pr_{0}(\vec{X} \in R) \leq \Pr_{0}(\vec{X} \in S_{\lambda})$. Тогда
+	\begin{enumerate}[label=\alph*)]
+		\item $\Pr_{1}(\vec{X} \in R) \leq \Pr_{1}(\vec{X} \in S_{\lambda})$,
+		\item $\Pr_{0}(\vec{X} \in S_{\lambda}) \leq \Pr_{1}(\vec{X} \in S_{\lambda})$.
+	\end{enumerate}
+\end{lemma}
+\begin{proof}
+	Для начала заметим, что для любого $x$\footnote{Данное рассуждение уже было в доказательстве теоремы Бахадура.}
+	\begin{equation}
+		\mathbf{1}_{x \in R}(p_{1}(x) - \lambda p_{0}(x)) \leq \mathbf{1}_{x \in S_{\lambda}}(p_{1}(x) - \lambda p_{0}(x)).
+	\end{equation}
+	Проинтегрируем неравенства по мере $\mu$ по всему выборочному пространству:
+	\begin{align}
+		\int_{R} (p_{1}(x) - \lambda p_{0}(x))\mu(\dd x) &\leq \int_{S_{\lambda}} (p_{1}(x) - \lambda p_{0}(x))\mu(\dd x), \\
+		\Pr_{1}(\vec{X} \in R) - \lambda \Pr_{0}(\vec{X} \in R) &\leq \Pr_{1}(\vec{X} \in S_{\lambda}) - \lambda \Pr_{0}(\vec{X} \in S_{\lambda}), \\
+		\Pr_{1}(\vec{X} \in R) - \Pr_{1}(\vec{X} \in S_{\lambda}) &\leq \lambda(\Pr_{0}(\vec{X} \in R) - \Pr_{0}(\vec{X} \in S_{\lambda})) \leq 0.
+	\end{align}
+
+	Для второго пункта нужно рассмотреть два случая:
+	\begin{itemize}
+		\item Пусть $\lambda \geq 1$. Тогда для $x \in S_{\lambda}$ выполнено следующее неравенство: $p_{1}(x) \geq \lambda p_{0}(x) \geq p_{0}(x)$. Следовательно, $\Pr_{0}(\vec{X} \in S_{\lambda}) \leq \Pr_{1}(\vec{X} \in S_{\lambda})$.
+		\item Пусть $\lambda \in (0, 1)$. Тогда для $x \not\in S_{\lambda}$ $p_{1}(x) < \lambda p_{0}(x) < p_{0}(x)$. Следовательно, $\Pr_{1}(\vec{X} \in \overline{S_{\lambda}}) \leq \Pr_{0}(\vec{X} \in \overline{S_{\lambda}})$ и $\Pr_{0}(\vec{X} \in S_{\lambda}) \leq \Pr_{1}(\vec{X} \in S_{\lambda})$.
+	\end{itemize}
+	Тем самым для любого $\lambda > 0$ $\Pr_{0}(\vec{X} \in S_{\lambda}) \leq \Pr_{1}(\vec{X} \in S_{\lambda})$.
+\end{proof}
+У данной леммы есть два приятных следствия:
+\begin{consequence}
+	Если $\lambda > 0$ удовлетворяет уравнению $\Pr_{0}(\vec{X} \in S_{\lambda}) = \epsilon$, то $S_{\lambda}$ является равномерно наиболее мощным критерием уровня значимости $\epsilon$ для проверки гипотезы $\mathrm{H}_{0} \colon \Pr = \Pr_{0}$ против гипотезы $\mathrm{H}_{1} \colon \Pr = \Pr_{1}$.
+\end{consequence}
+\begin{consequence}
+	$S_{\lambda}$ "--- несмещённый критерий.
+\end{consequence}
+
+\begin{definition}
+	Пусть $\{\Pr_{\theta} \mid \theta \in \Theta\}$, $\Theta \subseteq \mathbb{R}$ "--- это доминируемое семейство распределений с одномерным параметром и плотностью $p_{\theta}(x)$ по мере $\mu$. Говорят, что это семейство имеет \emph{монотонное отношение правдоподобия по статистике $T(\vec{X})$}, если для любых $\theta_{1} < \theta_{2}$, $\theta_{1}, \theta_{2} \in \Theta$
+	\begin{equation}
+		\frac{p_{\theta_{2}}(\vec{X})}{p_{\theta_{1}}(\vec{X})} = \psi_{\theta_{1}, \theta_{2}}(T(\vec{X})),
+	\end{equation}
+	где $\psi_{\theta_{1}, \theta_{2}}$ "--- это монотонная функция и её вид монотонности одинаков для всех $\theta_{1} < \theta_{2}$.
+\end{definition}
+\begin{lemma}
+	Пусть $\psi_{\theta_{1}, \theta_{2}}$ всегда неубывает по $T(\vec{X})$. Тогда для всех $c \in \mathbb{R}$ и для всех $\theta_{1} < \theta_{2}$, $\theta_{1}, \theta_{2} \in \Theta$ выполнено, что
+	\begin{equation}
+		\Pr_{\theta_{1}}(T(\vec{X}) \geq c) \leq \Pr_{\theta_{2}}(T(\vec{X}) \geq c).
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	Считаем, что $\psi_{\theta_{1}, \theta_{2}} \geq 0$ и не убывает на $\mathbb{R}$. Введём множество $D = \{\vec{x} \colon T(\vec{x}) \geq c\}$, где $c$ такое, что $\psi_{\theta_{1}, \theta_{2}}(c) \geq 1$. Тогда для любого $\vec{x} \in D$
+	\begin{equation}
+		p_{\theta_{2}}(\vec{x}) = \psi_{\theta_{1}, \theta_{2}}(T(\vec{x}))p_{\theta_{1}}(\vec{x}) \geq \psi_{\theta_{1}, \theta_{2}}(c)p_{\theta_{1}}(\vec{x}) \geq p_{\theta_{1}}(\vec{x}).
+	\end{equation}
+	Интегрируем это по мере $\mu$ по множеству $D$:
+	\begin{align}
+		\int_{D} p_{\theta_{2}}(\vec{x})\mu(\dd \vec{x}) &\geq \int_{D} p_{\theta_{1}}(\vec{x})\mu(\dd \vec{x}) \\
+		\Pr_{\theta_{2}}(T(\vec{X}) \geq c) &\geq \Pr_{\theta_{1}}(T(\vec{X}) \geq c).
+	\end{align}
+	Если же брать $c$ такое, что $\psi_{\theta_{1}, \theta_{2}}(c) \in [0, 1]$, то рассматриваем множество $\overline{D}$ и получаем то же самое.
+\end{proof}
+
+\begin{theorem}[о монотонном отношении правдоподобий]
+	Допустим, что проверяется гипотеза $\mathrm{H}_{0} \colon \theta \leq \theta_{0}$ против гипотезы $\mathrm{H}_{1} \colon \theta > \theta_{0}$. Если $c \in \mathbb{R}$ удовлетворяет соотношению $\Pr_{\theta_{0}}(T(\vec{X}) \geq c) = \gamma$, то критерий $S = \{\vec{x} \colon T(\vec{x}) \geq c\}$ является равномерно наиболее мощным критерием уровня доверия $\gamma$ для проверки гипотезы $\mathrm{H}_{0}$ против гипотезы $\mathrm{H}_{1}$.
+\end{theorem}
+\begin{proof}
+	Для начала возьмём какое-нибудь $\theta < \theta_{0}$. Тогда по лемме
+	\begin{equation}
+		\Pr_{\theta}(T(\vec{X}) \geq c) \leq \Pr_{\theta_{0}}(T(\vec{X}) \geq c) = \gamma.
+	\end{equation}
+	Из этого следует, что критерий $S$ имеет уровень значимости $\gamma$. Проверим то, что он равномерно наиболее мощный. Пусть $R$ "--- любой другой критерий с уровнем мощности $\gamma$. Возьмём какое-нибудь $\theta_{1} > \theta_{0}$. Нужно доказать, что
+	\begin{equation}
+		\Pr_{\theta_{1}}(\vec{X} \in R) \leq \Pr_{\theta_{1}}(X \in S).
+	\end{equation}
+	Согласно лемме Неймана-Пирсона равномерно наиболее мощный критерий уровня значимости $\gamma$ для проверки гипотезы $\mathrm{H}_{0} \colon \theta = \theta_{0}$ против гипотезы $\mathrm{H}_{1} \colon \theta = \theta_{1}$ имеет вид
+	\begin{equation}
+		S_{\lambda} = \{\vec{x} \colon p_{\theta_{1}}(x) - \lambda p_{\theta_{0}}(x) \geq 0\}, \text{ где } \Pr_{\theta_{0}}(\vec{X} \in S_{\lambda}) = \gamma.
+	\end{equation}
+	Однако
+	\begin{equation}
+		S_{\lambda} 
+		= \left\{\vec{x} \colon \frac{p_{\theta_{1}}(x)}{p_{\theta_{0}}(x)} \geq \lambda\right\}
+		= \{\vec{x} \colon \psi_{\theta_{1}, \theta_{2}}(T(\vec{X})) \geq \lambda\}
+		= \{\vec{x} \colon T(\vec{X}) \geq \tilde{\lambda}\}.
+	\end{equation}
+	Заметим, что $\tilde{\lambda} = c$ подходит под условие. Следовательно, для любого $\theta_{1} > \theta_{0}$
+	\begin{equation}
+		\Pr_{\theta_{1}}(\vec{X} \in R) 
+		\leq \Pr_{\theta_{1}}(\vec{X} \in S_{\lambda})
+		= \Pr_{\theta_{1}}(T(\vec{X}) \geq c)
+		= \Pr_{\theta_{1}}(\vec{X} \in S).
+	\end{equation}
+	Следовательно, $S$ является равномерно наиболее мощным критерием.
+\end{proof}
+\begin{consequence}
+	$S$ является равномерно наиболее мощным критерием уровня доверия $\gamma$ для проверки гипотезы $\mathrm{H}_{0} \colon \theta = \theta_{0}$ против гипотезы $\mathrm{H}_{1} \colon \theta > \theta_{0}$.
+\end{consequence}
+
+Теперь рассмотрим пример задачи на эту теорему.
+\begin{problem}
+	Пусть $\vec{X} = (X_{1}, \ldots, X_{n})$ "--- выборка из распределения Бернулли $\mathrm{Bern}(\theta)$, $\theta \in (0, 1)$. Найти равномерно наиболее мощный критерий уровня значимости $\gamma$ для проверки
+	\begin{enumerate}[label=\alph*)]
+		\item гипотеза $\mathrm{H}_{0} \colon \theta \leq \theta_{0}$ против гипотезы $\mathrm{H}_{1} \colon \theta > \theta_{0}$;
+		\item гипотеза $\mathrm{H}_{0} \colon \theta \geq \theta_{0}$ против гипотезы $\mathrm{H}_{1} \colon \theta < \theta_{0}$.
+	\end{enumerate}
+\end{problem}
+\begin{proof}
+	Для начала запишем функцию правдоподобия для выборки:
+	\begin{equation}
+		p_{\theta}(\vec{X})
+		= \prod_{i = 1}^{n} p_{\theta}(X_{i})
+		= \prod_{i = 1}^{n} \theta^{X_{i}}(1 - \theta)^{1 - X_{i}}
+		= \theta^{\sum_{i = 1}^{n} X_{i}}(1 - \theta)^{n - \sum_{i = 1}^{n} X_{i}}.
+	\end{equation}
+	Вычислим отношение правдоподобия для $\theta_{1} \neq \theta_{0}$:
+	\begin{align}
+		\frac{p_{\theta_{1}}(\vec{X})}{p_{\theta_{0}}(\vec{X})}
+		&= \left(\frac{\theta_{1}}{\theta_{0}}\right)^{\sum_{i = 1}^{n} X_{i}}\left(\frac{1 - \theta_{1}}{1 - \theta_{0}}\right)^{n - \sum_{i = 1}^{n} X_{i}} \\
+		&= \left(\frac{1 - \theta_{1}}{1 - \theta_{0}}\right)^{n}\left(\frac{\theta_{1}(1 - \theta_{0})}{\theta_{0}(1 - \theta_{1}}\right)^{\sum_{i = 1}^{n} X_{i}}.
+	\end{align}
+	Теперь будем искать критерии. 
+	\begin{enumerate}[label=\alph*)]
+		\item Если $\theta_{1}$ из альтернативы, то $\theta_{1} > \theta_{0}$ и $\theta_{1}(1 - \theta_{0}) > \theta_{1}(1 - \theta_{0})$. Следовательно, при росте $\sum_{i = 1}^{n} X_{i}$ отношение правдоподобия возрастает. Тогда искомая статистика $T(\vec{X}) = \sum_{i = 1}^{n} X_{i}$ и критерий имеет вид $S = \{\vec{x} \colon \sum_{i = 1}^{n} x_{i} \geq c\}$. Теперь нужно найти $c$:
+		\begin{equation}
+			\Pr_{\theta_{0}}(\sum_{i = 1}^{n} x_{i} \geq c) = \gamma
+			\implies
+			c = u_{1 - \gamma},
+		\end{equation}
+		где $u_{1 - \gamma}$ есть $(1 - \gamma)$-квантиль биномиального распределения $\mathrm{Bin}(n, \theta_{0})$.
+		\item В таком случае $\theta_{1} < \theta_{0}$ и отношение правдоподобия уменьшается с ростом $\sum_{i = 1}^{n} X_{i}$. Здесь ситуация ровно такая же, только нужно инвертировать знаки, то есть критерий имеет вид $S = \{\vec{x} \colon \sum_{i = 1}^{n} x_{i} \leq c\}$ и $c = u_{\gamma}$.
+	\end{enumerate}
+\end{proof}

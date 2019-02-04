@@ -1,0 +1,200 @@
+%!TEX root = ../main.tex
+
+\section{Лекция 15}
+\subsection{Слабая сходимость}
+\begin{definition}
+	\emph{Метрическим пространством} будем называть $(X, d)$, где $X$ есть некоторое множество, а $d \colon X \times X \mapsto \mathbb{R}_{+}$ "--- функция, называемая \emph{метрикой}, и обладающая следующими свойствами:
+	\begin{enumerate}[label=\alph*)]
+		\item Аксиома тождества: $d(x, x) = 0$ тогда и только тогда, когда $x = 0$,
+		\item Аксиома симметрии: $d(x, y) = d(y, x)$,
+		\item Неравенство треугольника: $d(x, z) \leq d(x, y) + d(y, z)$.
+	\end{enumerate}
+\end{definition}
+\begin{definition}
+	Пусть $(S, \rho)$ "--- метрическое пространство. Минимальную сигма-алгебру, порождённую открытыми шарами в $S$, будем называть \emph{борелевской сигма-алгеброй} $\mathcal{B}(S)$.
+\end{definition}
+\begin{definition}
+	Пусть задано метрическое пространство $(S, \rho)$ и последовательность $\{\QQ_{n}\}_{n = 1}^{\infty}$ вероятностных мер на $S$. Будем говорить, что $\QQ_{n}$ \emph{слабо сходятся} к вероятностной мере $\QQ$ на $S$, если для любой ограниченной непрерывной функции $f \colon S \mapsto \mathbb{R}$
+	\begin{equation}
+		\lim_{n \to \infty} \int_{S} f(x)\QQ_{n}(\dd x) = \int_{S} f(x)\QQ(\dd x).  
+	\end{equation}
+	Обозначение: $\QQ_{n} \xrightarrow{W} \QQ$.
+\end{definition}
+\begin{theorem}[Александров]
+	Пусть $\{\QQ_{n}\}_{n = 1}^{\infty}$ и $\QQ$ "--- вероятностные меры на метрическом пространстве $(S, \rho)$. Тогда следующие утверждения эквивалентны:
+	\begin{enumerate}[label=\alph*)]
+		\item $\QQ_{n} \xrightarrow{W} \QQ$,
+		\item Для любого замкнутого множества $F \subset S$ $\varlimsup_{n \to \infty} \QQ_{n}(F) \leq \QQ(F)$,
+		\item Для любого открытого множества $G \subset S$ $\varliminf_{n \to \infty} \QQ_{n}(G) \geq \QQ(G)$,
+		\item Для любого борелевского множества $B \in \mathcal{B}(S)$ такого, что $\QQ(\partial B) = 0$, $\QQ_{n}(B) \to \QQ(B)$ при $n \to \infty$.
+	\end{enumerate}
+\end{theorem}
+\begin{proof}
+	Для начала докажем, что если выполнена слабая сходимость, то для произвольного замкнутого множества $F$ выполнено ограничение снизу. Для произвольного $\epsilon > 0$ введём функцию
+	\begin{equation}
+		f_{\epsilon}(x) = \left(1 - \frac{\rho(x, F)}{\epsilon}\right)^{+}, \text{ где } \rho(x, F) = \inf_{y \in F} d(x, y).
+	\end{equation}
+	Заметим, что она непрерывна и ограничена. Тогда верна следующая цепочка:
+	\begin{align}
+		\varlimsup_{n \to \infty} \QQ_{n}(F)
+		&= \varlimsup_{n \to \infty} \int_{S} \mathbf{1}_{x \in F}\QQ_{n}(\dd x)
+		\leq \varlimsup_{n \to \infty} \int_{S} f_{\epsilon}(x)\QQ_{n}(\dd x)
+		= \int_{S} f_{\epsilon}(x)\QQ(\dd x)
+		\leq \QQ(F^{\epsilon}),
+	\end{align}
+	где $F^{\epsilon} = \{x \in S \colon \rho(x, F) \leq \epsilon\}$. Осталось заметить, что $F^{\epsilon}$ монотонно сжимается к $F$ при $\epsilon \to 0$. Тогда по непрерывности вероятностной меры $\QQ(F^{\epsilon}) \to \QQ(F)$. Следовательно, при устремлении $\epsilon$ к нулю получаем второй пункт.
+
+	Далее, эквивалентность второго и третьего пунктов очевидна, так как от одного к другому можно переходить, рассматривая дополнения множеств. Теперь докажем, что из второго и третьих пунктов следует четвёртый пункт. Для этого возьмём произвольное борелевское множество $B \in \mathcal{B}(S)$ такое, что $\QQ(\partial B) = 0$. Теперь введём два множества: $F = [B]$ и $G = B \setminus \partial B$. Заметим, что $F$ замкнуто, а $G$ открыто, причём их меры равны мере $B$ (так как мера границы есть ноль). Тогда несложно показать, что искомый предел существует и равен $Q(B)$:
+	\begin{align}
+		\varlimsup_{n \to \infty} \QQ_{n}(B) &\leq \varlimsup_{n \to \infty} \QQ_{n}(F) \leq Q(F) = Q(B), \\
+		\varliminf_{n \to \infty} \QQ_{n}(B) &\geq \varliminf_{n \to \infty} \QQ_{n}(G) \geq Q(G) = Q(B).
+	\end{align}
+
+	Осталось доказать, что из последнего пункта следует первый. Возьмём некоторую ограниченную непрерывную функцию $f \colon S \mapsto \mathbb{R}$ такую, что $|f(x)| < M$ для всех $x \in S$. Далее, построим следующее множество:
+	\begin{equation}
+		D = \{t \in [-M, M] \colon \QQ(\{x \in S \colon f(x) = t\}) > 0\}.
+	\end{equation}
+	% TODO: почему оно не может быть несчётным?
+	Данное множество не более, чем счётно. Теперь зафиксируем произвольное натуральное $k$ и возьмём разбиение $-M = t_{0} < t_{1} < \ldots < t_{k} = M$ отрезка $[-M, M]$ такое, что ни одно из $t_{i}$ не содержится в $D$. Далее, построим набор множеств $\{B_{i}\}_{i = 1}^{k}$ по следующему правилу: $B_{i} = \{x \in S \colon t_{i - 1} \leq f(x) < t_{i}\}$. Заметим, что $\partial B_{i} \subseteq f^{-1}(\{t_{i - 1}\}) \cup f^{-1}(\{t_{i}\})$. Но оба прообраза имеют нулевую меру, поэтому граница $B_{i}$ тоже имеет нулевую меру. Следовательно, $\QQ_{n}(B_{i}) \to \QQ(B_{i})$ при $n \to \infty$ для всех $i = 1, \ldots, k$. Теперь рассмотрим следующий верхний предел:
+	\begin{equation}
+		\Delta = \varlimsup_{n \to \infty} \left|\int_{S} f(x)\QQ_{n}(\dd x) - \int_{S} f(x)\QQ(\dd x)\right|.
+	\end{equation}
+	Ограничим её сверху суммой трёх верхних пределов:
+	\begin{align}
+		\Delta 
+		&\leq \varlimsup_{n \to \infty} \left|\int_{S} f(x)\QQ_{n}(\dd x) - \sum_{i = 1}^{k} t_{i - 1}\QQ_{n}(B_{i})\right| \\
+		&\hphantom{=}+ \varlimsup_{n \to \infty} \left|\sum_{i = 1}^{k} t_{i - 1}\QQ_{n}(B_{i}) - \sum_{i = 1}^{k} t_{i - 1}\QQ(B_{i})\right| \\
+		&\hphantom{=}+ \varlimsup_{n \to \infty} \left|\int_{S} f(x)\QQ(\dd x) - \sum_{i = 1}^{k} t_{i - 1}\QQ(B_{i})\right|
+	\end{align}
+	Второй предел сразу равен нулю. Теперь покажем, что первый (а так же и третий) предел не превосходит $\max_{i = 1, \ldots, k}|t_{i} - t_{i - 1}|$. Для этого заметим, что
+	\begin{equation}
+		\int_{S} f(x)\QQ_{n}(\dd x) = \sum_{i = 1}^{k} \int_{B_{i}} f(x)\QQ_{n}(\dd x) \leq \sum_{i = 1}^{k} t_{i}\QQ_{n}(B_{i}).
+	\end{equation}
+	Следовательно,
+	\begin{equation}
+		\left|\int_{S} f(x)\QQ_{n}(\dd x) - \sum_{i = 1}^{k} t_{i - 1}\QQ_{n}(B_{i})\right|
+		\leq \Bigl|\sum_{i = 1}^{k} (t_{i} - t_{i - 1})\QQ_{n}(B_{i})\Bigr|
+		\leq \max_{i = 1, \ldots, k}|t_{i} - t_{i - 1}|.
+	\end{equation}
+	Отсюда получаем, что
+	\begin{equation}
+		\Delta \leq 2\max_{i = 1, \ldots, k}|t_{i} - t_{i - 1}|.
+	\end{equation}
+	Но этот максимум стремится к нулю при устремлении диаметра разбиения к нулю. Следовательно, имеет место слабая сходимость.
+\end{proof}
+
+\subsection{Случайные процессы}
+Пусть $X = (X_{t}, t \in [0, 1])$ "--- случайный процесс. Тогда $X$ "--- случайный элемент со значением в пространстве функций на $[\,0, 1]$ с цилиндрической сигма-алгеброй.
+\begin{definition}
+	Пространство функций на $[0, 1]$ "--- это множество $\mathbb{R}^{[0, 1]} = \{y = (y(t), t \in [\,0, 1]), y(t) \in \mathbb{R}\}$.
+\end{definition}
+\begin{definition}
+	Пусть $B \in \mathcal{B}(\mathbb{R})$ и $t \in [0, 1]$. \emph{Элементарным цилиндром} называется множество $C(t, B) = \{y \in \mathbb{R}^{[0, 1]} \colon y(t) \in B\}$.
+\end{definition}
+\begin{definition}
+	\emph{Цилиндрической сигма-алгеброй} называется минимальная сигма-алгебра, порождённая элементарными цилиндрами:
+	\begin{equation}
+		\cylalgebra(\mathbb{R}^{[0, 1]}) = \sigma(\{C(t, B) \colon t \in [0, 1], B \in \mathcal{B}(\mathbb{R})\}) 
+	\end{equation}
+\end{definition}
+\begin{statement}
+	Отображение $X \colon \Omega \mapsto (\mathbb{R}^{[0, 1]}, \cylalgebra(\mathbb{R}^{[0, 1]}))$ является измеримым.
+\end{statement}
+Из этого следует, что имеет смысл вводить распределение случайного процесса $\Pr_{X}(C) = \Pr(X \in C)$, $C \in \cylalgebra(\mathbb{R}^{[0, 1]})$. Но пространство $\mathbb{R}^{[0, 1]}$ плохое. Поэтому обычно его сужают до пространства непрерывных функций из $[0, 1]$ в $\mathbb{R}$, которое обознают через $\mathcal{C}[0, 1]$. На нём есть норма $\|x\| = \max_{t \in [0, 1]} |x(t)|$. Следовательно, можно построить борелевскую сигма-алгебру $\mathcal{B}(\mathcal{C}[0, 1])$. 
+\begin{lemma}
+	Для пространства $\mathcal{C}[0, 1]$ борелевская сигма-алгебра совпадает с цилиндрической сигма-алгеброй: $\mathcal{B}(\mathcal{C}[0, 1]) = \cylalgebra(\mathcal{C}[0, 1])$.
+\end{lemma}  
+\begin{proof}
+	Для начала докажем, что выполнено следующее вложение: $\mathcal{B}(\mathcal{C}[0, 1]) \subseteq \cylalgebra(\mathcal{C}[0, 1])$. Для этого возьмём замкнутый шар $B_{r}[x] = \{y \in \mathcal{C}[0, 1] \colon \|y - x\| \leq r\}$. Тогда по непрерывности можно сказать, что
+	\begin{equation}
+		B_{r}[x] = \bigcap_{t \in \mathbb{Q}} \{y \in \mathcal{C}[0, 1] \colon |y(t) - x(t)| \leq r\}.
+	\end{equation}
+	Но это есть ни что иное, как счётное пересечение элементарных цилиндров. Следовательно, $B_{r}[x] \in \cylalgebra(\mathcal{C}[0, 1])$.
+
+	Теперь докажем обратное вложение. Для этого рассмотрим следующий цилиндр:
+	\begin{equation}
+		C(t, [a, b]) = \{y \in \mathcal{C}[0, 1] \colon y(t) \in [a, b]\}.
+	\end{equation}
+	Теперь введём функцию $h_{t} \colon \mathcal{C}[0, 1] \mapsto \mathbb{R}$, действующую по правилу $h_{t}(x) = x(t)$. Несложно понять, что это непрерывная функция. Теперь заметим, что $C(t, [a, b]) = h^{-1}_{t}([a, b])$. Но это будет замкнутое множество, так как для непрерывной функции прообраз замкнутого множества замкнут. Следовательно, $C(t, [a, b]) \in \mathcal{B}(\mathcal{C}[0, 1])$.
+\end{proof}
+\begin{definition}
+	Пусть $X^{(n)} = (X^{(n)}_{t}, t \in [0, 1])$ "--- последовательность случайных процессов. Будем говорить, что она сходится по распределению к случайному процессу $X = (X_{t}, t \in [0, 1])$, если имеет место слабая сходимость распределений: $\Pr_{X^{(n)}} \xrightarrow{W} \Pr_{X}$ при $n \to \infty$. Обозначение: $X^{(n)} \xrightarrow{\mathcal{D}} X$.
+\end{definition}
+\begin{theorem}[о наследовании сходимости]
+	Пусть $h \colon \mathcal{C}[0, 1] \mapsto \mathbb{R}$ "--- непрерывная функция и $X^{(n)} \xrightarrow{\mathcal{D}} X$ при $n \to \infty$. Тогда $h(X^{(n)}) \xrightarrow{d} h(X)$. 
+\end{theorem}
+\begin{proof}
+	Пусть $y \colon \mathbb{R} \mapsto \mathbb{R}$ "--- ограниченная непрерывная функция. Тогда композиция $g = y \odot h \mapsto \mathcal{C}[0, 1] \mapsto \mathbb{R}$ будет ограниченной непрерывной функцией. Рассмотрим $\EE[y(h(X^{(n)})]$. Оно равно  
+	\begin{equation}
+		\EE[y(h(X^{(n)}))] = \EE[g(X^{(n)})] = \int_{\mathcal{C}[0, 1]} g(x)\Pr_{X^{(n)}}(\dd x).
+	\end{equation}
+	Воспользуемся слабой сходимостью распределений:
+	\begin{equation}
+		\lim_{n \to \infty} \int_{\mathcal{C}[0, 1]} g(x)\Pr_{X^{(n)}}(\dd x)
+		= \int_{\mathcal{C}[0, 1]} g(x)\Pr_{X}(\dd x)
+		= \EE[g(X)].
+	\end{equation}
+	Следовательно, для любой ограниченной непрерывной функции $y \colon \mathbb{R} \mapsto \mathbb{R}$ выполнена следующая сходимость: $\EE[y(h(X^{(n)})] \to \EE[y(h(X))]$ при $n \to \infty$. Но это означает, что $h(X^{(n)}) \xrightarrow{d} h(X)$.
+\end{proof}
+
+\subsection{Назад к критерию Колмогорова}
+\begin{theorem}[принцип инвариантности Донскера-Прохорова]
+	Пусть $\{\xi_{n}\}_{n = 1}^{\infty}$ "--- последовательность независимых и одинаково распределённых случайных величин таких, что $\EE[\xi_{1}] = 0$ и $\DD[\xi_{1}] = 1$. Введём последовательность случайных величин $\{S_{n}\}_{n = 0}^{\infty}$ по следующему правилу: $S_{0} = 0$, $S_{n} = \xi_{1} + \ldots + \xi_{n}$. Далее, построим случайный процесс $X^{(n)} = (X^{(n)}_{t}, t \in [0, 1])$, как линейную интерполяцию $S_{0}, \ldots, S_{n}$:
+	\begin{equation}
+		X^{(n)}_{t} = \frac{S_{k}}{\sqrt{n}}(k + 1 - nt) + \frac{S_{k + 1}}{\sqrt{n}}(nt - k) \text{ при } t \in \left[\frac{k}{n}, \frac{k + 1}{n}\right],\ k = 0, \ldots, n - 1.
+	\end{equation}
+	Тогда $X^{(n)} \xrightarrow{\mathcal{D}} W$, где $W = (W_{t}, t \in [0, 1])$ "--- винеровский процесс.
+\end{theorem}
+
+Применим её к доказательству критерия Колмогорова. 
+\begin{theorem}
+	Пусть $X_{1}, \ldots, X_{n}$ "--- независимые и одинаково распределённые случайные величины с распределением $\mathrm{U}[0, 1]$, а $x \in [0, 1]$. Далее, вводится статистика
+	\begin{equation}
+		D_{n} = \sup_{x \in [0, 1]} |\hat{F}_{n}(x) - x|.
+	\end{equation}
+	Тогда имеет место следующая сходимость:
+	\begin{equation}
+		\sqrt{n}D_{n} \xrightarrow{d} \sup_{t \in [0, 1]}|W_{t} - tW_{1}|.
+	\end{equation} 
+\end{theorem}
+\begin{proof}
+	Для начала видоизменим определение $D_{n}$. Для этого поймём, где может достигаться супремум. Так как $\hat{F}_{n}$ является кусочно-постоянной функцией, то супремум может достигаться только в точках разрыва, ибо иначе значение можно увеличить, немного уменьшив $x$ "--- от этого значение $\hat{F}_{n}(x)$ не изменится. Следовательно,
+	\begin{equation}
+		D_{n} = \max_{k = 1, \ldots, n}\left|X_{(k)} - \frac{k}{n}\right|.
+	\end{equation}
+	Ранее доказывалось, что если $\xi_{1}, \ldots, \xi_{n + 1}$ "--- независимые и одинаково распределёные случайные величины с стандартным экспоненциальным распределением $\mathrm{Exp}(1)$, а $S_{k} = \xi_{1} + \ldots + \xi_{k}$, то
+	\begin{equation}
+		(X_{(1)}, \ldots, X_{(n)}) \stackrel{d}{=} \left(\frac{S_{1}}{S_{n + 1}}, \ldots, \frac{S_{n}}{S_{n + 1}}\right).
+	\end{equation}
+	Тогда распределение $\sqrt{n}D_{n}$ равно распределению
+	\begin{equation}
+		\sqrt{n}\max_{k = 1, \ldots, n}\left|\frac{S_{k}}{S_{n + 1}} - \frac{k}{n}\right|.
+	\end{equation}
+	Теперь заметим, что в пределе распределение выражения выше будет распределению 
+	\begin{equation}
+		\Delta = \sqrt{n + 1}\max_{k = 1, \ldots, n}\left|\frac{S_{k}}{S_{n + 1}} - \frac{k}{n + 1}\right|.
+	\end{equation}
+	Преобразуем выражение:
+	\begin{align}
+		\Delta
+		&= \frac{n + 1}{S_{n + 1}}\max_{k = 1, \ldots, n}\left|\frac{S_{k}}{\sqrt{n + 1}} - \frac{kS_{n + 1}}{(n + 1)\sqrt{n + 1}}\right| \\
+		&= \frac{n + 1}{S_{n + 1}}\max_{k = 1, \ldots, n}\left|\frac{S_{k} - k}{\sqrt{n + 1}} - \frac{k}{n + 1}\frac{S_{n + 1} - (n + 1)}{\sqrt{n + 1}}\right| = T_{n}.
+	\end{align} 
+	Теперь введём случайный процесс $X^{(n)} = (X^{(n)}_{t}, t \in [0, 1])$ по следующему правилу:
+	\begin{equation}
+		X^{(n)}_{t} = \frac{S_{k}}{\sqrt{n + 1}}(k + 1 - (n + 1)t) + \frac{S_{k + 1}}{\sqrt{n + 1}}((n + 1)t - k) \text{ при } t \in \left[\frac{k}{n + 1}, \frac{k + 1}{n + 1}\right],\ k = 0, \ldots, n.
+	\end{equation}
+	Далее заметим, что траектории случайного процесса $X^{(n)}$ "--- это ломаные. Поэтому
+	\begin{equation}
+		T_{n} \stackrel{d}{=} \frac{n + 1}{S_{n + 1}}\sup_{t \in [0, 1]}|X_{t}^{(n)} - tX_{1}^{(n)}|.
+	\end{equation}
+	Согласно лемме Слуцкого, усиленному закону больших чисел, принципу инвариантности и теореме о наследовании сходимости получаем, что
+	\begin{equation}
+		\Delta \xrightarrow{d} \sup_{t \in [0, 1]}|W_{t} - tW_{1}|.
+	\end{equation}
+	Тем самым получаем желаемое.
+\end{proof}	
+\begin{definition}
+	Случайныц процесс $W^{0} = (W_{t}^{0}, t \in [0, 1])$, где $W_{t}^{0} = W_{t} - tW_{1}$, называется \emph{броуновским мостом}.
+\end{definition}
+Остался последний вопрос: как показать, что распределение супремума броуновского моста будет равно распределению Колмогорова? Это уже не самая тривиальная задача. 
