@@ -4,18 +4,122 @@
 Вернёмся к параметрическому критерию хи-квадрат. Ранее мы сказали, что при выполнении определённых условий будет выполнен аналог теоремы Пирсона. Сформулируем их:
 \begin{enumerate}[label=\alph*)]
 	\item $\Theta \subseteq \mathbb{R}^{s}$, $s < m$ "--- открытое множество.
-	\item Для любого значения параметра все вероятности отделены от нуля: $p_{i}(\theta) \geq c^{2} > 0$.
-	\item Будем считать, что $\pdv{p_{i}(\theta)}{\theta_{j}}$ и $\pdv[2]{p_{i}(\theta)}{\theta_{j}}{\theta_{k}}$ непрерывны на всём $\Theta$.
-	\item Матрица $D = \|\pdv{p_{i}(\theta)}{\theta_{j}}\|_{i, j = 1}^{m, s}$ имеет ранг $s$ для любого $\theta \in \Theta$.
+	\item Для любого значения параметра все вероятности отделены от нуля: $p_{i}(\vec{\theta}) \geq c^{2} > 0$.
+	\item Будем считать, что $\pdv{p_{i}(\vec{\theta})}{\theta_{j}}$ и $\pdv[2]{p_{i}(\vec{\theta})}{\theta_{j}}{\theta_{k}}$ непрерывны на всём $\Theta$.
+	\item Матрица $\matr{D} = \|\pdv{p_{i}(\vec{\theta})}{\theta_{j}}\|_{i, j = 1}^{m, s}$ имеет ранг $s$ для любого $\theta \in \Theta$.
 \end{enumerate}
+
 Теперь можно сформулировать теорему про параметрический критерий хи-квадрат.
 \begin{theorem}
 	Пусть выполнены условия модели. Введём следующую систему уравнений:
 	\begin{equation}
-		\sum_{i = 1}^{m} \frac{\mu_{i}}{p_{i}(\theta)}\pdv{p_{i}(\theta)}{\theta_{j}} = 0, \quad j = 1, \ldots, s
+		\sum_{i = 1}^{m} \frac{\mu_{i}}{p_{i}(\vec{\theta})}\pdv{p_{i}(\vec{\theta})}{\theta_{j}} = 0, \quad j = 1, \ldots, s, \quad \mu_{j} = \sum_{i = 1}^{n} \mathbf{1}_{X_{i} = a_{j}}.
 	\end{equation}
-	Если верна гипотеза $\mathrm{H}_{0}$, то с вероятностью, стремящейся к 1, данная система имеет единственное решение $\hat{\theta}(\vec{X})$ такое, что $\hat{\theta}(\vec{X})$ сходится по вероятности к истинному значению параметра $\theta$ и
+	Если верна гипотеза $\mathrm{H}_{0}$, то с вероятностью, стремящейся к 1, данная система имеет единственное решение $\hat{\theta}(\vec{X})$ такое, что $\hat{\theta}(\vec{X})$ сходится по вероятности к истинному значению параметра $\vec{\theta}$ и
 	\begin{equation}
-		\hat{\chi}^{2}_{n}(\vec{X}) = \sum_{i = 1}^{m} \frac{(\mu_{j} - np_{j}(\hat{\theta}(\vec{X})))^{2}}{np_{j}(\hat{\theta}(\vec{X}))} \xrightarrow[n \to \infty]{d} \chi^{2}_{m - 1 - s}.
+		\hat{\chi}^{2}_{n}(\vec{X}) = \sum_{j = 1}^{m} \frac{(\mu_{j} - np_{j}(\hat{\theta}(\vec{X})))^{2}}{np_{j}(\hat{\theta}(\vec{X}))} \xrightarrow[n \to \infty]{d} \chi^{2}_{m - 1 - s}.
 	\end{equation}
-\end{theorem}	
+\end{theorem}
+\begin{proof}
+	Пусть $\vec{\theta}_{0}$ "--- истинное значение параметра $\vec{\theta}$. Далее, для удобства скажем, что
+	\[
+		p_{i}(\vec{\theta}_{0}) = p_{i}^{0}, 
+		\quad
+		\left.\pdv{p_{i}(\vec{\theta})}{\theta_{i}}\right|_{\vec{\theta} = \vec{\theta}_{0}}
+		= \left(\pdv{p_{i}}{\theta_{j}}\right)_{0}.
+	\]
+	Теперь введём матрицы
+	\[
+		\matr{P}_{0}
+		= \matrixdiag\left(\frac{1}{\sqrt{p_{1}^{0}}}, \ldots, \frac{1}{\sqrt{p_{m}^{0}}}\right) \in \mathbb{R}^{m \times m},
+		\quad
+		\matr{D}_{0}
+		= \matr{D}(\vec{\theta}_{0})
+		= \left\|\left(\pdv{p_{i}}{\theta_{j}}\right)_{0}\right\|_{i, j = 1}^{m, s} \in \mathbb{R}^{m \times s},
+		\quad 
+		\matr{B}_{0}
+		= \matr{P}_{0}\matr{D}_{0}.
+	\]
+	Теперь выразим систему из условия через данные матрицы. Введём ещё одно обозначение:
+	\begin{align*}
+		\omega_{j}(\vec{\theta})
+		&= \sum_{i = 1}^{m} \frac{\mu_{i} - np_{i}^{0}}{n}\left(\frac{1}{p_{i}}\pdv{p_{i}(\vec{\theta})}{\theta_{j}} - \frac{1}{p_{i}^{0}}\left(\pdv{p_{i}}{\theta_{j}}\right)_{0}\right)
+		- \sum_{i = 1}^{m} (p_{i} - p_{i}^{0})\left(\frac{1}{p_{i}}\pdv{p_{i}(\vec{\theta})}{\theta_{j}} - \frac{1}{p_{i}^{0}}\left(\pdv{p_{i}}{\theta_{j}}\right)_{0}\right) \\
+		&\hphantom{=}- \sum_{i = 1}^{m} \frac{1}{p_{i}^{0}}\left(\pdv{p_{i}}{\theta_{j}}\right)_{0}\left(p_{i} - p_{i}^{0} - \sum_{k = 1}^{s}\left(\pdv{p_{i}}{\theta_{k}}\right)_{0}(\theta_{k} - \theta_{k}^{0})\right).
+	\end{align*}
+	Зачем вводить это безобразие? Для того, чтобы доказать, что оно мало. Воспользуемся системой из условия и тем, что сумма $p_{i}$ равна единице:
+	\begin{align*}
+		\omega_{j}(\vec{\theta})
+		&= -\sum_{i = 1}^{m} \frac{\mu_{i} - np_{i}^{0}}{n}\left(\pdv{p_{i}}{\theta_{j}}\right)_{0} + \sum_{i = 1}^{m} \sum_{k = 1}^{s} \frac{1}{p_{i}^{0}}\left(\pdv{p_{i}}{\theta_{j}}\right)_{0}\left(\pdv{p_{i}}{\theta_{k}}\right)_{0}(\theta_{k} - \theta_{k}^{0}).
+	\end{align*}
+	Несложно показать, что если выполнено такое равенство, то верна система из условия. Теперь перепишем это равенство в матричном виде. Введём вектор $\vec{Y}_{j}$ по следущему правилу: $Y_{j} = (\mu_{j} - np_{j}^{0})/\sqrt{np_{j}^{0}}$. Тогда (проверьте!)
+	\[
+		\vec{\omega}(\vec{\theta})
+		= -\frac{1}{\sqrt{n}}\matr{B}_{0}^{\top}\vec{Y} + \matr{B}_{0}^{\top}\matr{B}_{0}(\vec{\theta} - \vec{\theta}_{0}).
+	\]
+	Далее, заметим, что матрица $\matr{B}_{0}^{\top}\matr{B}_{0}$ обратима, так как $\matr{D}_{0}$ имеет ранг $s$. В таком случае
+	\[
+		\vec{\theta} - \vec{\theta}_{0}
+		= \frac{1}{\sqrt{n}}(\matr{B}_{0}^{\top}\matr{B}_{0})^{-1}\matr{B}_{0}^{\top}\vec{Y} + (\matr{B}_{0}^{\top}\matr{B}_{0})^{-1}\vec{\omega}(\vec{\theta}).
+	\]
+	Теперь нужно доказать несколько фактов.
+	\begin{lemma}
+		Пусть $\lambda = \lambda(n) \to \infty$, $\lambda^{2} = o(n)$. Тогда с вероятностью $1 - \lambda^{-2}$ для всех $i \in \{1, \ldots, m\}$
+		\[
+			|Y_{i}| \leq \frac{\lambda}{c}. 
+		\]
+	\end{lemma}
+	\begin{proof}
+		Заметим, что $\mu_{i} \sim \Binomial(n, p_{i}^{0})$. Тогда по неравенству Чебышева
+		\[
+			\Pr_{\vec{\theta}_{0}}\left(\left|\mu_{i} - np_{i}^{0}\right| \geq \lambda\sqrt{n}\right)
+			\leq \frac{\DD_{\vec{\theta}_{0}}[\mu_{i}]}{n\lambda^{2}}
+			\leq \frac{p_{i}^{0}}{\lambda^{2}}.
+		\]
+		Следовательно,
+		\[
+			\Pr_{\vec{\theta}_{0}}\left(\exists i \colon \left|\mu_{i} - np_{i}^{0}\right| \geq \lambda\sqrt{n}\right)
+			\leq \sum_{i = 1}^{m} \Pr_{\vec{\theta}_{0}}\left(\left|\mu_{i} - np_{i}^{0}\right| \geq \lambda\sqrt{n}\right)
+			\leq \sum_{i = 1}^{m} \frac{p_{i}^{0}}{\lambda^{2}}
+			= \frac{1}{\lambda^{2}}.
+		\]
+		Тогда, с вероятностью не меньше $1 - \lambda^{-2}$ для всех $i$
+		\[
+			|Y_{i}|
+			= \frac{|\mu_{i} - np_{i}^{0}|}{\sqrt{np_{i}^{0}}}
+			\leq \frac{\lambda\sqrt{n}}{\sqrt{np_{i}^{0}}}
+			\leq \frac{\lambda}{c}. \qedhere
+		\]
+	\end{proof}
+	\begin{lemma}
+		\[
+			|\omega_{j}(\vec{\theta}') - \omega_{j}(\vec{\theta}'')|
+			\leq K_{1}\|\vec{\theta}' - \vec{\theta}''\|\left(\|\vec{\theta}' - \vec{\theta}_{0}\| + \|\vec{\theta}'' - \vec{\theta}_{0}\| + \frac{\lambda}{\sqrt{n}}\right),
+		\]
+		где $K_{1}$ "--- некоторая абсолютная константа.
+	\end{lemma}
+	\begin{proof}
+		Оставляется читателю в качестве упражнения.\footnote{Если кто сможет довести эту бандуру до конца "--- пинганите в Telegram.} 
+		\textit{Указание:} Рассмотрим разность (сразу учтём, что $p_{i}$ суммируются в 1):
+		\begin{align*}
+			w_{j}(\vec{\theta}') - w_{j}(\vec{\theta}'')
+			&= \sum_{i = 1}^{m} \frac{\mu_{i} - np_{i}^{0}}{n}\left(\frac{1}{p_{i}(\vec{\theta}')}\pdv{p_{i}(\vec{\theta}')}{\theta'_{j}} - \frac{1}{p_{i}(\vec{\theta}'')}\pdv{p_{i}(\vec{\theta}'')}{\theta''_{j}}\right) \\
+			&\hphantom{=}+ \sum_{i = 1}^{m}\frac{p_{i}(\vec{\theta}') - p_{i}(\vec{\theta}'')}{p_{i}^{0}}\left(\pdv{p_{i}}{\theta_{j}}\right)_{0} + \sum_{i = 1}^{m} p_{i}^{0}\left(\frac{1}{p_{i}(\vec{\theta}')}\pdv{p_{i}(\vec{\theta}')}{\theta'_{j}} - \frac{1}{p_{i}(\vec{\theta}'')}\pdv{p_{i}(\vec{\theta}'')}{\theta''_{j}}\right) \\
+			&\hphantom{=}- \sum_{i = 1}^{m} \frac{1}{p_{i}^{0}}\left(\pdv{p_{i}}{\theta_{j}}\right)_{0}\left(p_{i}(\vec{\theta}') - p_{i}(\vec{\theta}'') - \sum_{k = 1}^{s}\left(\pdv{p_{i}}{\theta_{k}}\right)_{0}(\theta'_{k} - \theta''_{k})\right).
+		\end{align*}
+		Далее, воспользуйтесь разложением $p_{i}(\vec{\theta}')$ и $p_{i}(\vec{\theta}'')$ в ряд Тейлора до второго порядка в точке $\vec{\theta}_{0}$.
+	\end{proof}
+	Теперь осталось построить саму оценку. Рассмотрим уравнение 
+	\[
+		\vec{\theta}
+		= \vec{\theta}_{0} + \frac{1}{\sqrt{n}}(\matr{B}_{0}^{\top}\matr{B}_{0})^{-1}\matr{B}_{0}^{\top}\vec{Y} + (\matr{B}_{0}^{\top}\matr{B}_{0})^{-1}\vec{\omega}(\vec{\theta}).
+	\]
+	Заметим, что $\vec{\omega}(\vec{\theta}_{0}) = 0$. Далее, определим последовательность приближений $(\hat{\vec{\theta}}_{l}, l \in \mathbb{N})$ по следущему правилу:
+	\begin{align*}
+		\hat{\vec{\theta}}_{1}
+		&= \vec{\theta}_{0} + \frac{1}{\sqrt{n}}(\matr{B}^{\top}\matr{B})^{-1}\matr{B}\vec{Y}, \\
+		\hat{\vec{\theta}}_{l}
+		&= \hat{\vec{\theta}}_{1} + (\matr{B}^{\top}\matr{B})^{-1}\vec{\omega}(\hat{\vec{\theta}}_{l - 1}).
+	\end{align*}
+	Заметим, что $\|\hat{\vec{\theta}}_{1} - \vec{\theta}_{0}\| \leq K_{2}\lambda/\sqrt{n}$ для какой-то константы $K_{2}$.
+\end{proof}
